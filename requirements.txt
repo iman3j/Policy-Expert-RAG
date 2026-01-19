@@ -9,3 +9,7 @@ pypdf
 docx2txt
 rank-bm25
 python-multipart
+langchain-openai
+langchain-huggingface
+pymupdf
+pillow
