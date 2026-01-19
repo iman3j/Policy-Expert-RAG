@@ -4,13 +4,27 @@ from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
 
 def ask_multimodal(query, k=5):
-    BASE_DIR = os.getcwd()
-    VECTOR_DIR = os.path.join(BASE_DIR, "vectorstore", "faiss_index_multimodal")
-
+    current_file = os.path.abspath(__file__)
+    backend_dir = os.path.dirname(current_file)
+    base_dir = os.path.dirname(backend_dir)
+    
+   
+    VECTOR_DIR = os.path.join(base_dir, "vectorstore", "faiss_index_multimodal")
+    if not os.path.exists(VECTOR_DIR):
+        print(f"DEBUG: Vector directory not found at {VECTOR_DIR}")
+        VECTOR_DIR = os.path.join(base_dir, "Vectorstore", "faiss_index_multimodal")
     embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
-    db = FAISS.load_local(VECTOR_DIR, embeddings, allow_dangerous_deserialization=True)
+    
+    try:
+        db = FAISS.load_local(
+            VECTOR_DIR, 
+            embeddings, 
+            allow_dangerous_deserialization=True
+        )
+    except Exception as e:
+        return [f"Error loading vector store: {str(e)}"], []
 
-    # Similarity Search
+    # Similarity Search 
     results = db.similarity_search(query, k=k)
 
     texts = []
@@ -22,6 +36,11 @@ def ask_multimodal(query, k=5):
         elif doc.metadata.get("type") == "image":
             img_path = doc.metadata.get("image_path")
             if img_path:
+                img_path = img_path.replace("\\", "/")
+                if "Data/" in img_path:
+                    relative_path = img_path.split("Data/")[-1]
+                    img_path = os.path.join(base_dir, "Data", relative_path)
+                
                 images.append(img_path)
 
     return texts, list(set(images))
