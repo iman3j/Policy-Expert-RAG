@@ -1,0 +1,13 @@
+# Sensitive keys
+.env
+
+# Python environment
+.venv/
+env/
+venv/
+bin/
+lib/
+
+# Python cache
+__pycache__/
+*.pyc

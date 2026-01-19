@@ -1,0 +1,11 @@
+langchain
+langchain-community
+sentence-transformers
+faiss-cpu
+fastapi
+uvicorn
+streamlit
+pypdf
+docx2txt
+rank-bm25
+python-multipart
